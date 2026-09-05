@@ -182,7 +182,7 @@ export class MultiplayerSyncScript extends Script {
 }
 ```
 
-### Frontend
+### Web Client
 Run frontend:
 ```sh
 npx nx dev frontend
@@ -196,7 +196,19 @@ Preview production build:
 npx nx preview frontend
 ```
 
-### Backend
+### Web Server
+Run backend:
+```sh
+npx nx dev backend
+```
+Build production backend:
+```sh
+npx nx build backend
+```
+Preview production build:
+```sh
+npx nx preview backend
+```
 
 ### Shared Libraries
 
