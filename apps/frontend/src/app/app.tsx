@@ -2,9 +2,7 @@
 // import styles from './app.module.css';
 import { CanvasContainer } from '../components/CanvasContainer';
 import NxWelcome from './nx-welcome';
-import { boxScene } from "../lib/games/scenes/boxScene";
-import { emptyScene } from "../lib/games/scenes/emptyScene";
-import { GameScene } from "../lib/games/types/scene";
+import { boxScene, emptyScene, GameScene } from '@org/game-engine';
 
 const gameLevelsManifest: GameScene[] = [
   boxScene, 

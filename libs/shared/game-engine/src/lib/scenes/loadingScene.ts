@@ -1,5 +1,5 @@
 import { SceneId } from "@org/shared-types";
-import { GameScene } from "../types/scene";
+import { GameScene } from "../types/scene.js";
 import { Camera, Vector3, Color } from "@galacean/engine";
 
 export const loadingScene: GameScene = {

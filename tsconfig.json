@@ -14,6 +14,9 @@
     },
     {
       "path": "./libs/shared/shared-types"
+    },
+    {
+      "path": "./libs/shared/game-engine"
     }
   ],
   "compilerOptions": {}

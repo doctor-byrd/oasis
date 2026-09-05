@@ -1,7 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { initEngine } from "../lib/games/engine/galeaceanEngine";
-import { GameScene } from "../lib/games/types/scene";
-import { registerScenes } from "../lib/stores/engineStore";
+import { initEngine, registerScenes, GameScene } from "@org/game-engine";
 
 interface CanvasContainerProps {
   scenes: GameScene[];

@@ -2,8 +2,8 @@ import { Store } from '@tanstack/store';
 import { WebGLEngine } from '@galacean/engine';
 import { GUI } from '@galacean/gui';
 import { SceneId } from "@org/shared-types";
-import { GameScene } from '../../lib/games/types/scene';
-import { loadingScene } from '../games/scenes/loadingScene';
+import { GameScene } from '../types/scene.js';
+import { loadingScene } from '../scenes/loadingScene.js';
 
 interface EngineState {
   engine: WebGLEngine | null;

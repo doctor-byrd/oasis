@@ -198,7 +198,7 @@ npx nx preview frontend
 
 ### Backend
 
-### Shared Types Library
+### Shared Libraries
 
 Generate shared types, run at the top level of monorepo
 ```sh
@@ -206,3 +206,8 @@ npx nx g @nx/js:library shared-types --directory=libs/shared/shared-types --comp
 ```
 
 It is important to note, the shared-types library should be used as a data-only package, this is good for things like common interface definitions, data transfer objects, enumerators, or identifiers. Keep specific execution logic local to either the frontend or backend.
+
+Generate shared game-engine library, this abstracts game engine logic and allows reuse across both web and mobile clients
+```sh
+npx nx g @nx/js:library game-engine --directory=libs/shared/game-engine --compiler=tsc --bundler=none
+```

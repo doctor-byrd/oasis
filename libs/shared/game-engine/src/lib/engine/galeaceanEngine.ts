@@ -1,6 +1,6 @@
 import { WebGLEngine } from "@galacean/engine";
 import { GUI, type GUIItemConfig } from "@galacean/gui";
-import { engineStore } from "../../stores/engineStore";
+import { engineStore } from "../store/engineStore.js";
 
 export async function initEngine(canvas: HTMLCanvasElement): Promise<WebGLEngine> {
   // If already initialized, return it immediately
