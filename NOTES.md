@@ -204,3 +204,5 @@ Generate shared types, run at the top level of monorepo
 ```sh
 npx nx g @nx/js:library shared-types --directory=libs/shared/shared-types --compiler=tsc --bundler=none
 ```
+
+It is important to note, the shared-types library should be used as a data-only package, this is good for things like common interface definitions, data transfer objects, enumerators, or identifiers. Keep specific execution logic local to either the frontend or backend.
