@@ -1,6 +1,6 @@
 # Mini App
 
-### Workflow
+### Basic Workflow
 
 Creating a script
 ```ts
@@ -66,6 +66,120 @@ export const gltfScene: GameScene = {
     light.transform.lookAt(new Vector3(-1, -1, -1));
   }
 };
+```
+
+### Advanced Workflow
+
+We can use the `colyseus` schema to share server side and client side logic for managing player state in a shared library
+```ts
+// libs/shared/src/lib/PlayerState.ts
+import { Schema, type } from "@colyseus/schema";
+
+export class PlayerState extends Schema {
+  @type("string") id: string = "";
+  @type("number") x: number = 0;
+  @type("number") y: number = 0;
+  @type("number") z: number = 0;
+}
+
+export class GameRoomState extends Schema {
+  // A synchronized map of all players currently inside the room
+  @type({ map: PlayerState }) players = new Map<string, PlayerState>();
+}
+```
+
+Inside NestJS Colyseus Room
+```ts
+// apps/backend/src/game/rooms/BattleRoom.ts
+import { Room, Client } from "colyseus";
+import { GameRoomState, PlayerState } from "@org/game-protocol";
+
+export class BattleRoom extends Room<GameRoomState> {
+  onCreate(options: any) {
+    this.setState(new GameRoomState());
+
+    // Listen for imperative input payloads from client scripts
+    this.onMessage("move", (client, inputData: { x: number, z: number }) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+        // Authoritative server logic: validate and update position
+        player.x += inputData.x * 0.1;
+        player.z += inputData.z * 0.1;
+      }
+    });
+  }
+
+  onJoin(client: Client, options: any) {
+    const player = new PlayerState();
+    player.id = client.sessionId;
+    this.state.players.set(client.sessionId, player);
+  }
+
+  onLeave(client: Client) {
+    this.state.players.delete(client.sessionId);
+  }
+}
+```
+
+Within the client side engine store:
+```ts
+// apps/frontend/src/lib/games/store/engineStore.ts
+// (Expand your existing store state)
+import { Client, Room } from "colyseus.js";
+import { GameRoomState } from "@org/game-protocol";
+
+interface MultiplayerState {
+  client: Client | null;
+  activeRoom: Room<GameRoomState> | null;
+}
+
+// You can create a dedicated networkStore or add it to your engineStore
+export const networkStore = new Store<MultiplayerState>({
+  client: new Client("ws://localhost:2567"), // Point to your NestJS server port
+  activeRoom: null,
+});
+
+export async function joinGameRoom(roomId: string) {
+  const room = await networkStore.state.client!.joinOrCreate<GameRoomState>(roomId);
+  networkStore.setState((state) => ({ ...state, activeRoom: room }));
+  return room;
+}
+```
+
+Inside our client side Galacean script
+```ts
+import { Script } from "@galacean/engine";
+import { networkStore } from "../store/engineStore";
+
+export class MultiplayerSyncScript extends Script {
+  private _remoteEntities = new Map<string, any>();
+
+  onStart() {
+    const room = networkStore.state.activeRoom;
+    if (!room) return;
+
+    // Listen to players entering the server state
+    room.state.players.onAdd((player, sessionId) => {
+      // 1. Create a proxy 3D entity in the engine for this remote player
+      const remoteCube = this.entity.createChild(sessionId);
+      // ... Add MeshRenderer and Materials ...
+
+      this._remoteEntities.set(sessionId, remoteCube);
+
+      // 2. Listen to position mutations streamed from the NestJS backend
+      player.onChange(() => {
+        // Linearly interpolate (LERP) or snap to server coordinates
+        remoteCube.transform.setPosition(player.x, player.y, player.z);
+      });
+    });
+
+    room.state.players.onRemove((player, sessionId) => {
+      const entity = this._remoteEntities.get(sessionId);
+      entity?.destroy();
+      this._remoteEntities.delete(sessionId);
+    });
+  }
+}
 ```
 
 ### Frontend

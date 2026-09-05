@@ -46,7 +46,8 @@
   "workspaces": [
     "packages/*",
     "apps/*",
-    "libs/*"
+    "libs/*",
+    "libs/shared/*"
   ],
   "dependencies": {
     "@colyseus/tools": "^0.18.3",

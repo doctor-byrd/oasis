@@ -11,6 +11,9 @@
     },
     {
       "path": "./apps/frontend"
+    },
+    {
+      "path": "./libs/shared/shared-types"
     }
   ],
   "compilerOptions": {}
