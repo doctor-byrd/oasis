@@ -197,3 +197,10 @@ npx nx preview frontend
 ```
 
 ### Backend
+
+### Shared Types Library
+
+Generate shared types, run at the top level of monorepo
+```sh
+npx nx g @nx/js:library shared-types --directory=libs/shared/shared-types --compiler=tsc --bundler=none
+```
