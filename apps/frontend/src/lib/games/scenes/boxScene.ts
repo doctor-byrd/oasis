@@ -1,4 +1,5 @@
-import { GameScene, SceneId } from "../types/scene";
+import { SceneId } from "@org/shared-types";
+import { GameScene } from "../types/scene";
 import { Camera, MeshRenderer, PrimitiveMesh, BlinnPhongMaterial, Vector3, Color } from "@galacean/engine";
 import { Rotate } from "../scripts/rotate";
 import { initGUI } from "../engine/galeaceanEngine";
