@@ -31,46 +31,41 @@ export class PlayerController extends Script {
 
 Creating a scene:
 ```ts
-import { getEngine, initGUI } from "../store/engineStore";
-import { MeshRenderer, PrimitiveMesh, BlinnPhongMaterial } from "@galacean/engine";
-import { PlayerController } from "../scripts/PlayerController";
+import { GameScene, SceneId } from "../types/scene";
+import { AssetType, Camera, DirectLight, Vector3 } from "@galacean/engine";
 
-export function loadMainLevel() {
-  const engine = getEngine();
-  const scene = engine.sceneManager.activeScene;
-  const root = scene.createRootEntity("LevelRoot");
-
-  // 1. Create a game object (Entity)
-  const playerEntity = root.createChild("PlayerCube");
+export const gltfScene: GameScene = {
+  id: SceneId.SCENE_ONE,
+  name: "Heavy GLTF Level",
   
-  // 2. Add visual components
-  const renderer = playerEntity.addComponent(MeshRenderer);
-  renderer.mesh = PrimitiveMesh.createCuboid(engine, 1, 1, 1);
-  
-  const material = new BlinnPhongMaterial(engine);
-  renderer.setMaterial(material);
+  // State your asset needs explicitly
+  assets: [
+    {
+      type: AssetType.GLTF,
+      url: "https://alipayobjects.com",
+    }
+  ],
 
-  // 3. Add your custom behavior script (Unity style!)
-  const controller = playerEntity.addComponent(PlayerController);
+  load(engine, loadedResources) {
+    const scene = engine.sceneManager.activeScene;
+    const root = scene.createRootEntity("GLTFRoot");
 
-  // 4. Hook up your data directly to your GUI for real-time adjustments
-  initGUI(
-    { speed: controller.moveSpeed }, 
-    [
-      {
-        label: "Movement Speed",
-        bindPath: "speed",
-        type: "Slider" as any,
-        min: 1,
-        max: 20,
-        onChange(value: number) {
-          // Adjust your live game state directly on the engine instance script
-          controller.moveSpeed = value;
-        }
-      }
-    ]
-  );
-}
+    // Grab the pre-loaded GLTF asset directly from the typed array index!
+    const gltfResource = loadedResources[0];
+    const { defaultSceneRoot } = gltfResource;
+    root.addChild(defaultSceneRoot);
+
+    // Setup typical environment properties boilerplate
+    const cam = root.createChild("Cam");
+    cam.transform.setPosition(0, 5, 15);
+    cam.transform.lookAt(new Vector3(0, 0, 0));
+    cam.addComponent(Camera);
+
+    const light = root.createChild("Light");
+    light.addComponent(DirectLight);
+    light.transform.lookAt(new Vector3(-1, -1, -1));
+  }
+};
 ```
 
 ### Frontend

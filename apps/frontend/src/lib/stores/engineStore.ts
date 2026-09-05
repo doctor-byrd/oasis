@@ -1,131 +1,117 @@
 import { Store } from '@tanstack/store';
 import { WebGLEngine } from '@galacean/engine';
 import { GUI } from '@galacean/gui';
-import { GameScene, SceneId } from '../games/types/scene';
+import { GameScene, SceneId } from '../../lib/games/types/scene';
+import { loadingScene } from '../games/scenes/loadingScene';
 
 interface EngineState {
   engine: WebGLEngine | null;
   gui: GUI | null;
   isReady: boolean;
-  scenes?: Record<SceneId, GameScene>; // Hashmap of available scenes
-  activeSceneId?: string | null;      // Track what is currently running
+  scenes: Record<SceneId, GameScene>;
+  activeSceneId: SceneId | null;
 }
 
 export const engineStore = new Store<EngineState>({
   engine: null,
   gui: null,
   isReady: false,
+  scenes: {} as Record<SceneId, GameScene>,
+  activeSceneId: null,
 });
 
-/**
- * Synchronous imperative getter for scripts.
- */
 export function getEngine(): WebGLEngine {
   const { engine } = engineStore.state;
-  if (!engine) {
-    throw new Error("Galacean Engine has not been initialized yet.");
-  }
+  if (!engine) throw new Error("Engine not initialized.");
   return engine;
 }
 
 /**
- * Synchronous imperative getter for GUI.
+ * Sweeps the canvas node architecture and runs raw configuration mounts.
  */
-export function getGUI(): GUI {
-  const { gui } = engineStore.state;
-  if (!gui) {
-    throw new Error("GUI has not been initialized yet.");
-  }
-  return gui;
-}
-
-/**
- * Completely tears down the global engine lifecycle, destroys WebGL contexts, 
- * disposes of DOM wrappers, and resets the TanStack Store states.
- */
-export function destroyEngine(): void {
+function purgeAndExecuteLoad(targetScene: GameScene, resources: any[] = []): void {
   const { engine, gui } = engineStore.state;
+  if (!engine) return;
 
-  // 1. Wipe and unmount GUI rendering layer
   if (gui) {
-    try {
-      gui.dispose();
-    } catch (err) {
-      console.warn("Failed to dispose Galacean GUI:", err);
-    }
+    gui.dispose();
+    engineStore.setState((state) => ({ ...state, gui: null }));
   }
 
-  // 2. Destruct the underlying engine instance and clear GPU cache pools
-  if (engine) {
-    try {
-      engine.destroy();
-    } catch (err) {
-      console.warn("Failed to destroy Galacean WebGLEngine:", err);
-    }
+  const activeContext = engine.sceneManager.activeScene;
+  for (let i = activeContext.rootEntitiesCount - 1; i >= 0; i--) {
+    activeContext.getRootEntity(i)?.destroy();
   }
 
-  // 3. Reset state parameters back to blank baseline configurations
-  engineStore.setState(() => ({
-    engine: null,
-    gui: null,
-    isReady: false,
+  targetScene.load(engine, resources);
+  
+  engineStore.setState((state) => ({
+    ...state,
+    activeSceneId: targetScene.id,
   }));
 }
 
 /**
- * Register available layout templates into your global runtime map. By default, it will automatically launch the very first scene in the array.
+ * Registers application game levels. Automatically triggers loading screen flows 
+ * if the starting index targets heavy external asset records.
  */
 export function registerScenes(sceneList: GameScene[]): void {
   if (sceneList.length === 0) return;
 
   engineStore.setState((state) => {
     const updatedScenes = { ...state.scenes };
-    sceneList.forEach((s) => {
-      updatedScenes[s.id] = s;
+    
+    // 1. Manually lock the system loading setup into our registry pool
+    updatedScenes[loadingScene.id] = loadingScene;
+
+    // 2. Loop and map our incoming playable levels
+    sceneList.forEach((s) => { 
+      updatedScenes[s.id] = s; 
     });
+
     return { ...state, scenes: updatedScenes };
   });
 
-  // If no scene is running yet, automatically boot up the first scene in the sequence
+  // 3. Command the machine to explicitly load the first playable game level
   if (!engineStore.state.activeSceneId) {
-    switchScene(sceneList[0].id);
+    switchScene(sceneList[0].id).catch(console.error);
   }
 }
 
 /**
- * Sweeps the previous entity tree, disposes the old GUI panel,
- * and launches the loading lifecycle of the target scene registry.
+ * Dynamic asynchronous scene routing manager.
  */
-export function switchScene(sceneId: SceneId): void {
-  const { engine, scenes, activeSceneId, gui } = engineStore.state;
-  if (!engine) throw new Error("Cannot switch scenes before engine initialization.");
+export async function switchScene(sceneId: SceneId): Promise<void> {
+  const { engine, scenes, activeSceneId } = engineStore.state;
+  if (!engine) throw new Error("Engine not initialized.");
 
   const targetScene = scenes[sceneId];
-  if (!targetScene) throw new Error(`Scene with ID "${sceneId}" is not registered.`);
+  if (!targetScene) throw new Error(`Scene "${sceneId}" not found.`);
 
-  // 1. Fire unload callback on existing scene
   if (activeSceneId && scenes[activeSceneId]?.unload) {
     scenes[activeSceneId].unload!();
   }
 
-  // 2. Wipe active debug panels
-  if (gui) {
-    gui.dispose();
-    engineStore.setState((state) => ({ ...state, gui: null }));
+  // RULE A: If target level has no assets, render it instantly bypass styles
+  if (!targetScene.assets || targetScene.assets.length === 0) {
+    purgeAndExecuteLoad(targetScene);
+    return;
   }
 
-  // 3. Clear existing runtime scene entities
-  const activeContext = engine.sceneManager.activeScene;
-  for (let i = activeContext.rootEntitiesCount - 1; i >= 0; i--) {
-    activeContext.getRootEntity(i)?.destroy();
+  // RULE B: Target level requires assets down-wire! Display Loading Scene instantly
+  const systemLoader = scenes[SceneId.LOADING];
+  if (systemLoader) {
+    purgeAndExecuteLoad(systemLoader);
   }
 
-  // 4. Initialize the new code-driven target environment
-  targetScene.load(engine);
+  // Stream binary targets into hardware thread pools
+  let loadedResources: any[] = [];
+  try {
+    loadedResources = await engine.resourceManager.load(targetScene.assets);
+  } catch (err) {
+    throw new Error(`Asset preloading failed for ${sceneId}: ${err}`);
+  }
 
-  // 5. Update global store index
-  engineStore.setState((state) => ({
-    ...state,
-    activeSceneId: sceneId,
-  }));
+  // Finalize assembly swap into the pre-warmed game world
+  purgeAndExecuteLoad(targetScene, loadedResources);
 }
