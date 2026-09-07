@@ -56,10 +56,19 @@
     "@galacean/engine": "^1.6.13",
     "@galacean/engine-toolkit": "^1.6.0",
     "@galacean/gui": "^1.2.1",
+    "@nestjs/bullmq": "^12.0.0",
     "@nestjs/common": "^11.0.0",
+    "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/event-emitter": "^3.1.0",
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "^2.1.1",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/platform-socket.io": "^11.2.1",
+    "@nestjs/throttler": "^6.5.0",
     "@nestjs/typeorm": "^12.0.1",
+    "@socket.io/redis-adapter": "^8.3.0",
     "@tanstack/react-query": "^5.102.8",
     "@tanstack/react-store": "^0.11.1",
     "axios": "^1.6.0",
@@ -72,6 +81,8 @@
     "react-dom": "^18.3.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "typeorm": "^1.1.1"
   }
 }
