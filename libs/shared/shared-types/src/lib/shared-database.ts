@@ -1,4 +1,4 @@
-import { UserStatus, FriendshipStatus, TeamRole, TournamentFormat, TournamentStatus, ChannelType } from './shared-types.js';
+import { UserRole, UserStatus, FriendshipStatus, TeamRole, TournamentFormat, TournamentStatus, ChannelType } from './shared-types.js';
 import { 
     Check,
     Entity, 
@@ -41,14 +41,23 @@ export class User extends BaseEntity {
   @Column({ length: 255 })
   email: string;
 
-  @Column({ length: 255, select: false }) // Never return password hash in standard queries
+  @Column({ length: 255, select: false })
   passwordHash: string;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.OFFLINE })
   status: UserStatus;
 
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
+
   @OneToMany(() => UserSetting, (setting) => setting.user, { cascade: true })
   settings: UserSetting[];
+
+  @Column({ name: 'reset_token', type: 'varchar', length: 255, nullable: true })
+  resetToken: string | null;
+
+  @Column({ name: 'reset_token_expires_at', type: 'timestamp', nullable: true })
+  resetTokenExpiresAt: Date | null;
 }
 
 @Entity('user_settings')

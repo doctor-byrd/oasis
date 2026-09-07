@@ -12,6 +12,11 @@ export enum SceneId {
   SCENE_TWO = "SCENE_TWO",
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 export enum UserStatus {
   OFFLINE = 'offline',
   ONLINE = 'online',
