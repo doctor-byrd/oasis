@@ -228,3 +228,20 @@ Generate shared game-engine library, this abstracts game engine logic and allows
 ```sh
 npx nx g @nx/js:library game-engine --directory=libs/shared/game-engine --compiler=tsc --bundler=none
 ```
+
+### Infrastructure
+
+Spin up containers:
+```sh
+docker compose -f infra/docker-compose.yml up -d
+```
+
+Stop containers:
+```sh
+docker compose -f infra/docker-compose.yml down
+```
+
+Wipe containers:
+```sh
+docker compose -f infra/docker-compose.yml down -v
+```

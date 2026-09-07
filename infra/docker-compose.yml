@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nx_postgres
+    restart: unless-stopped
+    # Explicitly bind to 127.0.0.1 to avoid Docker DNS and mimic an external DB
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: dev_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: nx_redis
+    restart: unless-stopped
+    # Explicitly bind to 127.0.0.1
+    ports:
+      - "127.0.0.1:6379:6379"
+    # Add a simple password to mimic a real distributed environment
+    command: redis-server --requirepass dev_redis_password
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
