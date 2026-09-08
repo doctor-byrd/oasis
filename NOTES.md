@@ -260,3 +260,13 @@ Check logs for container:
 ```sh
 docker logs <container-name>
 ```
+
+Default PG Admin runs on port `8080`
+Username: `admin@domain.com`
+Password: `admin_password`
+
+On first setup be sure to connect to the dev db using the information specified in the `docker-compose.yml` file. You can do this by adding the postgres server.
+Default Host: `postgres`
+Default Port: `5432`
+Default User: `dev_user`
+Default Password: `dev_password`
