@@ -199,7 +199,7 @@ npx nx preview frontend
 ### Web Server
 Run backend:
 ```sh
-npx nx dev backend
+npx nx serve backend
 ```
 Build production backend:
 ```sh
@@ -231,6 +231,11 @@ npx nx g @nx/js:library game-engine --directory=libs/shared/game-engine --compil
 
 ### Infrastructure
 
+See active Nx projects:
+```sh
+npx nx show projects
+```
+
 Spin up containers:
 ```sh
 docker compose -f infra/docker-compose.yml up -d
@@ -244,4 +249,14 @@ docker compose -f infra/docker-compose.yml down
 Wipe containers:
 ```sh
 docker compose -f infra/docker-compose.yml down -v
+```
+
+Check containers:
+```sh
+docker ps
+```
+
+Check logs for container:
+```sh
+docker logs <container-name>
 ```
