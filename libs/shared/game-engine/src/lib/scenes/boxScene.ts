@@ -2,7 +2,7 @@ import { SceneId } from "@org/shared-types";
 import { Camera, MeshRenderer, PrimitiveMesh, BlinnPhongMaterial, Vector3, Color } from "@galacean/engine";
 import { GameScene } from "../types/scene.js";
 import { Rotate } from "../scripts/rotate.js";
-import { initGUI } from "../engine/galeaceanEngine.js";
+import { initGUI } from "../engine/galaceanEngine.js";
 
 export const boxScene: GameScene = {
   id: SceneId.SCENE_ONE,

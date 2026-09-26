@@ -4,7 +4,7 @@ export * from './lib/game-engine.js';
 export * from './lib/types/scene.js';
 
 // Export Core Lifecycle Hooks
-export * from './lib/engine/galeaceanEngine.js';
+export * from './lib/engine/galaceanEngine.js';
 export * from './lib/store/engineStore.js';
 
 // Export Game Level Manifests
