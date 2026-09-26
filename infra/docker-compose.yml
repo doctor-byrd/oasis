@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: dev_password
       POSTGRES_DB: dev_db
     volumes:
-      - postgres_/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
@@ -20,7 +20,7 @@ services:
       - "127.0.0.1:6379:6379"
     command: redis-server --requirepass dev_redis_password
     volumes:
-      - redis_/data
+      - redis_data:/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -41,8 +41,8 @@ services:
     container_name: nx_minio
     restart: unless-stopped
     ports:
-      - "127.0.0.1:9000:9000"   # S3 API
-      - "127.0.0.1:9001:9001"   # MinIO Console
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
     environment:
       MINIO_ROOT_USER: dev_minio_admin
       MINIO_ROOT_PASSWORD: dev_minio_password
@@ -50,8 +50,8 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 2s
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
       timeout: 2s
       retries: 5
 
