@@ -1,4 +1,4 @@
-import { UserRole, UserStatus, FriendshipStatus, TeamRole, TournamentFormat, TournamentStatus, ChannelType } from './shared-types.js';
+import { UserRole, UserStatus, FriendshipStatus, TeamRole, TournamentFormat, TournamentStatus, ChannelType, AssetVisibility, AssetCategory } from './shared-types.js';
 import { 
     Check,
     Entity, 
@@ -75,6 +75,42 @@ export class UserSetting {
   @JoinColumn({ name: 'userId' })
   user: User;
 }
+
+@Entity({ name: 'asset_metadata' })
+export class AssetMetadata extends BaseEntity {
+
+  @Column({
+    type: 'varchar',
+    length: 50,
+  })
+  category!: AssetCategory | string;
+
+  @Column({ name: 'asset_key', unique: true })
+  assetKey!: string;
+
+  @Column()
+  filename!: string;
+
+  @Column({ name: 'mime_type' })
+  mimeType!: string;
+
+  @Column({ name: 'file_size', type: 'bigint' })
+  fileSize!: number;
+
+  @Column({
+    type: 'varchar',
+    length: 20,
+    default: AssetVisibility.PUBLIC,
+  })
+  visibility!: AssetVisibility | string;
+
+  @Column({ name: 'owner_id', nullable: true })
+  ownerId?: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  tags?: Record<string, unknown>;
+}
+
 
 // Social & Teams (SocialModule & TeamModule)
 
@@ -287,48 +323,4 @@ export class LeaderboardArchive {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
-}
-
-// Storage & Assets (StorageModule)
-
-@Entity('assets')
-@Index(['ownerId'])
-export class Asset extends BaseEntity {
-  @Column('uuid', { nullable: true })
-  ownerId: string | null; // Null for public/system assets
-
-  @Column({ length: 255 })
-  s3Key: string;
-
-  @Column({ length: 500 })
-  publicUrl: string;
-
-  @Column({ length: 100 })
-  mimeType: string;
-
-  @Column({ type: 'bigint' })
-  sizeBytes: number;
-
-  @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'ownerId' })
-  owner: User | null;
-
-  @OneToMany(() => AssetMetadata, (meta) => meta.asset, { cascade: true })
-  metadata: AssetMetadata[];
-}
-
-@Entity('asset_metadata')
-export class AssetMetadata {
-  @PrimaryColumn('uuid')
-  assetId: string;
-
-  @PrimaryColumn({ length: 50 })
-  key: string;
-
-  @Column({ length: 255 })
-  value: string;
-
-  @ManyToOne(() => Asset, (asset) => asset.metadata, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'assetId' })
-  asset: Asset;
 }
