@@ -1,5 +1,4 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import {
@@ -32,14 +31,13 @@ export class StorageService {
   constructor(
     @InjectRepository(AssetMetadata)
     private readonly assetRepo: Repository<AssetMetadata>,
-    private readonly configService: ConfigService,
   ) {
-    const endPoint = environment.ENVIRONMENT === 'development' ? DevS3Options.ENDPOINT : this.configService.get<string>('S3_ENDPOINT', 'localhost');
-    const port = environment.ENVIRONMENT === 'development' ? DevS3Options.PORT : this.configService.get<number>('S3_PORT', 9000);
-    const accessKey = environment.ENVIRONMENT === 'development' ? DevS3Options.ACCESS_KEY : this.configService.get<string>('S3_ACCESS_KEY', 'dev_minio_admin');
-    const secretKey = environment.ENVIRONMENT === 'development' ? DevS3Options.SECRET_KEY : this.configService.get<string>('S3_SECRET_KEY', 'dev_minio_password');
-    const useSSL = environment.ENVIRONMENT === 'development' ? DevS3Options.SSL : this.configService.get<boolean>('S3_USE_SSL', false);
-    this.bucketName = environment.ENVIRONMENT === 'development' ? DevS3Options.BUCKET_NAME : this.configService.get<string>('S3_BUCKET', 'game-assets');
+    const endPoint = environment.ENVIRONMENT === 'development' ? DevS3Options.ENDPOINT : environment.S3_ENDPOINT
+    const port = environment.ENVIRONMENT === 'development' ? DevS3Options.PORT : environment.S3_PORT
+    const accessKey = environment.ENVIRONMENT === 'development' ? DevS3Options.ACCESS_KEY : environment.S3_ACCESS_KEY
+    const secretKey = environment.ENVIRONMENT === 'development' ? DevS3Options.SECRET_KEY : environment.S3_SECRET_KEY
+    const useSSL = environment.ENVIRONMENT === 'development' ? DevS3Options.SSL : environment.S3_USE_SSL
+    this.bucketName = environment.ENVIRONMENT === 'development' ? DevS3Options.BUCKET_NAME : environment.S3_BUCKET
 
     // Build base URL for asset access
     const protocol = useSSL ? 'https' : 'http';
