@@ -4,7 +4,7 @@ export const environment = {
     REDIS_URL:process.env.REDIS_URL,
     JWT_SECRET:process.env.JWT_SECRET,
     S3_ENDPOINT:process.env.S3_ENDPOINT,
-    S3_PORT:process.env.S3_ENDPOINT,
+    S3_PORT:process.env.S3_PORT,
     S3_ACCESS_KEY:process.env.S3_ACCESS_KEY,
     S3_SECRET_KEY:process.env.S3_SECRET_KEY,
     S3_USE_SSL:process.env.S3_USE_SSL,
