@@ -61,7 +61,7 @@ export enum ChannelType {
 
 /**
  * Asset categories for organizing game resources in S3/MinIO.
- * Maps to bucket folder structure: carbuncle-assets/{category}/{subPath}
+ * Maps to bucket folder structure: game-assets/{category}/{subPath}
  */
 export enum AssetCategory {
   CHARACTERS = 'characters',

@@ -59,5 +59,5 @@ export const DevS3Options = {
     ACCESS_KEY: 'dev_minio_admin',
     SECRET_KEY: 'dev_minio_password',
     SSL: false,
-    BUCKET_NAME: 'carbuncle-assets'
+    BUCKET_NAME: 'game-assets'
 } as const
